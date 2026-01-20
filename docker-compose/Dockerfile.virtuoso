@@ -1,0 +1,5 @@
+FROM tenforce/virtuoso:virtuoso7.2.5
+
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+COPY ./old-backend/config/virtuoso.ini /etc/virtuoso-opensource-7/virtuoso.ini
