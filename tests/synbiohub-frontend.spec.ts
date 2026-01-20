@@ -2,12 +2,9 @@ import { test, expect } from '@playwright/test';
 import * as path from 'path';
 
 test.describe('SynBioHub Setup Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to the SynBioHub homepage before each test
-    await page.goto('http://localhost:3333/');
-  });
-
-  test('default setup', async ({ page }) => {
+  test('Setup SynBioHub Instance', async ({ page }) => {
+    // Navigate to the setup page
+    await page.goto('/');
 
     // Check we are on the setup page
     // await expect(page).toHaveURL('http://localhost:3333/setup');
@@ -52,4 +49,72 @@ test.describe('SynBioHub Setup Tests', () => {
     // Wait for the main page to load
     await expect(page.locator('span.instanceName')).toHaveText('Test Instance');
   });
+
+  test.describe('Account Management Tests', () => {
+    test('Admin can login with setup credentials', async ({ page }) => {
+      // Navigate to the login page
+      await page.goto('/login');
+      // Fill in the login form
+      await page.getByRole('textbox', { name: 'Username or Email' }).fill('testuser');
+      await page.getByRole('textbox', { name: 'Password' }).fill('testpassword');
+      // Submit the form
+      await page.getByRole('button', { name: 'Sign in' }).click();
+
+      // Wait for the main page to load 1 second
+      await page.waitForTimeout(1000);
+
+      // Verify successful login by checking for username in the header
+      // Open user menu
+      await page.locator('div[class*="navbar_profilecontainer"]').click();
+
+      // Get the signed in user info
+      await expect(page.locator('div[class*="navbar_userinfo"]')).toContainText('testuser');
+
+
+      // Admin can change settings
+
+
+
+      
+      // Admin can logout
+      // Navigate to the homepage
+      await page.goto('/');
+      // Click the logout button
+      await page.getByRole('button', { name: 'Logout' }).click();
+      // Verify we are back on the login page
+      await expect(page).toHaveURL('http://localhost:3333/login');
+    });
+
+    // test('User can create account', async ({ page }) => {
+    //   // Navigate to the login page
+    //   await page.goto('http://localhost:3333/register');
+
+    //   // Fill in the login form
+    //   await page.locator('input[name="username"]').fill('testuser');
+    //   await page.locator('input[name="full name"]').fill('Test User');
+    //   await page.locator('input[name="password"]').fill('testpassword');
+    //   await page.locator('input[name="password (again)"]').fill('testpassword');
+    //   await page.locator('input[name="email"]').fill('testuser@example.com');
+
+
+    //   // Submit the form
+    //   await page.getByRole('button', { name: 'Create Account' }).click();
+
+    //   // Verify successful login by checking for the instance name
+    //   await expect(page.locator('span.instanceName')).toHaveText('Test Instance');
+    // });
+
+    // test('User can log out', async ({ page }) => {
+    //   // Ensure user is logged in first
+    //   await page.goto('http://localhost:3333/');
+    //   await expect(page.locator('span.instanceName')).toHaveText('Test Instance');
+
+    //   // Click the logout button
+    //   await page.getByRole('button', { name: 'Logout' }).click();
+
+    //   // Verify we are back on the homepage
+    //   await expect(page).toHaveURL('http://localhost:3333/');
+    // });
+  }
+  );
 });
